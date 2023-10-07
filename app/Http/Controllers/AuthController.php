@@ -16,14 +16,13 @@ class AuthController extends Controller
     {
         return User::create([
             'name' => $request->input('name'),
-            'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
         ]);
     }
 
     public function login(Request $request)
     {
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (!Auth::attempt($request->only('name', 'password'))) {
             return response([
                 'message' => 'Invalid credentials!'
             ], Response::HTTP_UNAUTHORIZED);
