@@ -23,6 +23,6 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('user', [AuthController::class, 'user']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('scores', [ScoresController::class, 'store']);
-    Route::get('top-scores', [ScoresController::class, 'topScores']);
 });
+Route::get('top-scores', [ScoresController::class, 'topScores']);
 
