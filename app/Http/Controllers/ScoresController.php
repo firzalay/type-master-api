@@ -26,11 +26,16 @@ class ScoresController extends Controller
 
     public function topScores()
     {
+        $subquery = DB::table('user_scores')
+            ->select('user_id', DB::raw('MAX(wpm_score) as max_score'), DB::raw('MAX(accuracy) as max_accuracy'))
+            ->groupBy('user_id');
+
         $scores = DB::table('users')
-            ->leftJoin('user_scores', 'users.id', '=', 'user_scores.user_id')
-            ->select('users.name', DB::raw('MAX(user_scores.wpm_score) as max_score'), DB::raw('MAX(user_scores.accuracy) as max_accuracy'))
-            ->groupBy('users.id')
-            ->orderBy('max_score', 'desc')
+            ->joinSub($subquery, 'subquery', function ($join) {
+                $join->on('users.id', '=', 'subquery.user_id');
+            })
+            ->select('users.name', 'subquery.max_score as wpm_score', 'subquery.max_accuracy as accuracy')
+            ->orderBy('subquery.max_score', 'desc')
             ->limit(25)
             ->get();
 
