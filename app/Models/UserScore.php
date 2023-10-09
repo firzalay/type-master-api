@@ -13,6 +13,7 @@ class UserScore extends Model
     protected $fillable = [
         'user_id',
         'wpm_score',
+        'accuracy',
     ];
 
     public function user()
