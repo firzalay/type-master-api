@@ -34,7 +34,7 @@ class ScoresController extends Controller
             })
             ->select('users.name', 'subquery.max_score as wpm_score')
             ->orderBy('subquery.max_score', 'desc')
-            ->limit(25)
+            ->limit(10)
             ->get();
 
 
