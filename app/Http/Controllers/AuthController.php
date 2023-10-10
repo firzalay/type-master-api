@@ -14,6 +14,11 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        $request->validate([
+            'name' => 'required|unique:users',
+            'password' => 'required|min:6',
+        ]);
+
         return User::create([
             'name' => $request->input('name'),
             'password' => Hash::make($request->input('password')),
@@ -37,7 +42,6 @@ class AuthController extends Controller
         return response([
             'message' => $token
         ])->withCookie($cookie);
-
     }
 
     public function user()
@@ -45,7 +49,7 @@ class AuthController extends Controller
         return Auth::user();
     }
 
-    public function logout() 
+    public function logout()
     {
         $cookie = Cookie::forget('jwt');
 
@@ -53,5 +57,11 @@ class AuthController extends Controller
             'message' => 'Success'
         ])->withCookie($cookie);
     }
-}
 
+    public function checkNameAvailability(Request $request)
+    {
+        $name = $request->input('name');
+        $user = User::where('name', $name)->first();
+        return response(['nameTaken' => $user !== null]);
+    }
+}
