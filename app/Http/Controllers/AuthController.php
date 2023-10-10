@@ -27,22 +27,26 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        if (!Auth::attempt($request->only('name', 'password'))) {
-            return response([
-                'message' => 'Invalid credentials!'
-            ], Response::HTTP_UNAUTHORIZED);
-        };
+        $credentials = $request->only('name', 'password');
 
-        $user = Auth::user();
+        $user = User::where('name', $credentials['name'])->first();
+
+        if (!$user || strcmp($user->name, $credentials['name']) !== 0 || !Hash::check($credentials['password'], $user->password)) {
+            return response([
+                'error' => 'Invalid credentials!'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
 
         $token = $user->createToken('token')->plainTextToken;
 
-        $cookie = cookie('jwt', $token, 60 * 24); // 1 day
+        $cookie = cookie('jwt', $token, 60 * 24); 
 
         return response([
-            'message' => $token
+            'message' => 'Login successful!'
         ])->withCookie($cookie);
     }
+
+
 
     public function user()
     {
